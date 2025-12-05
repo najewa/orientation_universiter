@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-$e7aq+&owh==a)t-$w+f0ffwb*$a^r03g0z4wa&d6e51d^5!jb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS  = ['*'] 
 
 
 # Application definition
@@ -69,21 +71,27 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+# Production settings for Render
+DEBUG = False
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Media files (si tu en as)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# PostgreSQL Database from Render environment variables
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_orientation',
-        'USER': 'dbuser',
-        'PASSWORD': 'Orientation12',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
+
+# Security for production
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com'
+]
 
 
 
@@ -121,7 +129,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-import os 
+
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),]
