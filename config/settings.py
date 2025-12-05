@@ -79,6 +79,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+
+
+import os
+import dj_database_url
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Production settings for Render
+DEBUG = False
+
+ALLOWED_HOSTS = ['*']  # temporaire – à personnaliser plus tard
+
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (si tu en as)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 # PostgreSQL Database from Render environment variables
 DATABASES = {
     'default': dj_database_url.config(
@@ -92,8 +115,6 @@ DATABASES = {
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com'
 ]
-
-
 
 
 # Password validation
