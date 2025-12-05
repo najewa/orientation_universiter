@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>espace etudiant</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+/* === STYLE GLOBAL === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+body > * { flex: 1; }
+
+/* === HEADER === */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #b7a7f3 , #e1c7f7);
+  padding: 40px 30px;
+  box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: #fff;
+}
+
+.profile-info { display: flex; align-items: center; }
+.profile-info img {
+  width: 65px; height: 65px; border-radius: 50%; object-fit: cover;
+  margin-right: 15px; border: 3px solid rgba(255,255,255,0.7);
+  cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.profile-info img:hover { transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.6); }
+.profile-info div h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.profile-info div p { margin: 3px 0 0 0; font-size: 14px; opacity: 0.9; }
+
+/* === BOUTONS HEADER === */
+.header-buttons button {
+  margin-left: 10px; padding: 10px 30px; border-radius: 10px; border: none;
+  font-weight: 600; cursor: pointer; transition: all 0.3s ease; color: white; font-size: 14px;
+}
+.header-buttons button:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+.btn-edit { background: linear-gradient(135deg, #a44feb, #982cca); }
+
+/* === MAIN === */
+.main-content {
+  height: 100%; margin: 0px auto; padding: 0px; background-color: #d4caf1e8;
+  border-radius: 20px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); min-height: 100vh;
+}
+.main-content h3 { color: #7c3aed; }
+
+/* === MODALE GÉRER LE COMPTE === */
+.modal-custom {
+  display: none;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  z-index: 1000;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.modal-custom.show { transform: translate(-50%, -50%) scale(1); }
+
+.modal-custom h3 {
+  margin-top: 0; margin-bottom: 20px;
+  color: #7c3aed; font-weight: 600;
+}
+
+.modal-custom input, 
+.modal-custom select, 
+.modal-custom button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
+
+.modal-custom input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 6px rgba(167,139,250,0.3);
+}
+
+.modal-custom button {
+  background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.modal-custom button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 12px rgba(167,139,250,0.4);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #888;
+}
+.modal-close:hover { color: #000; }
+
+/* === OVERLAY === */
+.overlay {
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 900;
+}
+
+/* === ANIM === */
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(-5px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+
+
+#formulaireModal .list-group-item {
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+  padding: 10px 25px;
+}
+#formulaireModal h5 {
+  color: #6a1b9a;
+  font-weight: 600;
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- === HEADER === -->
+<div class="header">
+  <div class="profile-info">
+    <img src="{{ user.profile_photo_url|default:'https://via.placeholder.com/60' }}" alt="Photo Profil" id="profilePic">
+    <div>
+      <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+      <p>{{ user.email }}</p>
+    </div>
+  </div>
+  <div class="header-buttons">
+    <button class="btn-edit" onclick="openModal('editModal')">Gérer le compte</button>
+   
+   
+
+<!-- Bouton notification -->
+
+<button class="btn btn-primary position-relative"  id="notifModalButton" onclick="openNotifModal()">
+    <i class="bi bi-bell-fill"></i> Notification
+    {% if new_decision %}
+        <!-- Badge rouge pour nouvelle décision -->
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            !
+            <span class="visually-hidden">Nouvelle notification</span>
+        </span>
+    {% endif %}
+</button>
+
+
+<!-- Modal Notification -->
+<div id="notifModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-info-circle-fill"></i> Notification Administrative</h5>
+                <button type="button" class="btn-close btn-close-white" onclick="closeNotifModal()"></button>
+            </div>
+            <div class="modal-body">
+                {% if student %}
+                    {% if student.decision_admin == "accepted" %}
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <div>
+                                Félicitations ! 🎉 Votre choix de spécialité 
+                                <strong>{{ student.specialite_choisit }}</strong> a été accepté par l'administration.
+                            </div>
+                        </div>
+                    {% elif student.decision_admin == "refused" %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="bi bi-x-circle-fill me-2"></i>
+                            <div>
+                                Votre choix de spécialité <strong>{{ student.specialite_choisit }}</strong> 
+                                a été refusé par l'administration.<br>
+                                Vous êtes orienté vers la spécialité : 
+                                <strong>{{ student.specialite_finale }}</strong>.
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            <div>Votre demande est en cours d'étude par l'administration.</div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-secondary d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>Étudiant non trouvé pour cet utilisateur.</div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNotifModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+  
+
+
+    
+ <button class="btn-edit" data-bs-toggle="modal" data-bs-target="#formulaireModal"> 
+    📄 Mon formulaire envoyé
+</button>
+
+
+    <button class="btn-edit" data-bs-toggle="modal" data-bs-target="#logoutModal">
+      <i class="bi bi-box-arrow-right"></i> Déconnecter
+    </button>
+  </div>
+</div>
+
+
+
+<!-- === ALERTES === -->
+  {% if messages %} 
+  <div class="alert-container">
+     {% for message in messages %}
+      <div class="alert {{ message.tags }}"> 
+        <span class="icon">
+             {% if message.tags == 'error' %}❗{% elif message.tags == 'success' %}✅{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+        </span> 
+        {{ message }} 
+    </div> 
+        {% endfor %}
+     </div> 
+        {% endif %} 
+        {% include 'main/specialty_choice.html' %}
+<!-- === OVERLAY === -->
+<div class="overlay" id="overlay"></div>
+
+<!-- === MODALE GÉRER LE COMPTE === -->
+<div class="modal-custom" id="editModal">
+  <span class="modal-close" onclick="closeModal('editModal')">&times;</span>
+  <h3>Modifier mon profil</h3>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Prénom" required>
+    <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Nom" required>
+    <input type="email" name="email" value="{{ user.email }}" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Nouveau mot de passe">
+    <input type="file" name="profile_photo" accept="image/*">
+    <button type="submit">Mettre à jour</button>
+  </form>
+</div>
+
+<!-- === MODALE DÉCONNEXION === -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content logout-modal shadow-lg border-0">
+      <div class="modal-body text-center p-4">
+        <i class="bi bi-box-arrow-right text-danger" style="font-size:2rem;"></i>
+        <h5 class="mt-3">Voulez-vous vraiment vous déconnecter ?</h5>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger px-4" id="confirmLogout">
+            <i class="bi bi-check2-circle"></i> Oui
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- Modal Détails Formulaire -->
+<div class="modal fade" id="formulaireModal" tabindex="-1" aria-labelledby="formulaireModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="formulaireModalLabel">📄 Détails de votre formulaire envoyé</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {% if existing_choice %}
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>Numéro d'inscription :</strong> {{ existing_choice.inscription }}</li>
+          <li class="list-group-item"><strong>Nom :</strong> {{ existing_choice.last_name }}</li>
+          <li class="list-group-item"><strong>Prénom :</strong> {{ existing_choice.first_name }}</li>
+          <li class="list-group-item"><strong>CIN :</strong> {{ existing_choice.identite }}</li>
+          <li class="list-group-item"><strong>Date de naissance :</strong> {{ existing_choice.birth_date }}</li>
+          <li class="list-group-item"><strong>Email :</strong> {{ existing_choice.email }}</li>
+          <li class="list-group-item"><strong>Choix de spécialités :</strong> {{ existing_choice.order_preference }}</li>
+        </ul>
+
+        <div class="text-center mt-4">
+          <a href="{% url 'student_dashboard' %}" class="btn btn-primary">
+            <i class="bi bi-pencil-square"></i> Modifier le formulaire
+          </a>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">Aucun formulaire envoyé pour le moment.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- === SCRIPTS === -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function openModal(id){
+  document.getElementById('overlay').style.display = 'block';
+  const modal = document.getElementById(id);
+  modal.style.display = 'block';
+  setTimeout(()=>{ modal.classList.add('show'); }, 10);
+}
+
+function closeModal(id){
+  const modal = document.getElementById(id);
+  modal.classList.remove('show');
+  setTimeout(()=>{
+    modal.style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }, 300);
+}
+
+document.getElementById('profilePic').onclick = () => { openModal('editModal'); };
+
+// Redirection vers la page login_student.html
+document.getElementById('confirmLogout').addEventListener('click', () => {
+  window.location.href = "{% url 'login_student' %}";
+});
+
+
+
+
+
+//modale notification 
+function openNotifModal() {
+    var modal = new bootstrap.Modal(document.getElementById('notifModal'));
+    modal.show();
+}
+
+function closeNotifModal() {
+    var modal = bootstrap.Modal.getInstance(document.getElementById('notifModal'));
+    if(modal) modal.hide();
+}
+
+
+
+function openNotifModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('notifModal'));
+    myModal.show();
+}
+
+function closeNotifModal() {
+    var modalEl = document.getElementById('notifModal');
+    var modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+}
+
+
+</script>
+
+</body>
+</html>

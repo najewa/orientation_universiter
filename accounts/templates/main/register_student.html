@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Inscription Étudiant - ISG Bizerte</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #cce7ff 0%, #99cfff 100%);
+        color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background-color: #ffffffdd;
+        padding: 50px 40px;
+        border-radius: 20px;
+        width: 400px;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0, 123, 255, 0.4);
+        transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 40px rgba(0, 123, 255, 0.6);
+    }
+
+    h2 {
+        color: #007bff;
+        margin-bottom: 30px;
+        font-size: 28px;
+        letter-spacing: 0.5px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        margin: 12px 0;
+        border-radius: 10px;
+        border: 1px solid #b3d7ff;
+        background-color: #f0f8ff;
+        color: #1a1a1a;
+        font-size: 16px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
+
+    input::placeholder {
+        color: #6c757d;
+    }
+
+    input:focus {
+        outline: none;
+        box-shadow: 0 0 8px #007bff;
+        border-color: #007bff;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #66b2ff, #3399ff);
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    button:hover {
+        background: linear-gradient(45deg, #3399ff, #66b2ff);
+        transform: scale(1.05);
+    }
+
+    a {
+        display: block;
+        margin-top: 15px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s;
+    }
+
+    a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 450px) {
+        .container {
+            width: 90%;
+            padding: 40px 20px;
+        }
+
+        h2 { font-size: 24px; }
+        input, button { font-size: 15px; padding: 12px; }
+    }
+
+
+
+
+   
+
+   .alert-container {
+    margin-bottom: 15px;
+}
+
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.alert .icon {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* ✅ Erreur */
+.alert.error {
+    background: #ffe4e4;
+    border-left: 6px solid #e63946;
+    color: #b30000;
+}
+
+/* ✅ Succès */
+.alert.success {
+    background: #e3f8ff;
+    border-left: 6px solid #0d6efd;
+    color: #004085;
+}
+
+/* ✅ Info */
+.alert.info, .alert.warning {
+    background: #fff7e6;
+    border-left: 6px solid #ffb347;
+    color: #a66b00;
+}
+
+/* Animation légère */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Inscription Étudiant</h2>
+         {% if messages %}
+<div class="alert-container">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}">
+            <span class="icon">
+                {% if message.tags == 'error' %}
+                    ❗
+                {% elif message.tags == 'success' %}
+                    ✅
+                {% elif message.tags == 'warning' %}
+                    ⚠️
+                {% else %}
+                    ℹ️
+                {% endif %}
+            </span>
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+     <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="first_name" placeholder="Prénom" required>
+    <input type="text" name="last_name" placeholder="Nom" required>
+    <input type="text" name="identite" placeholder="CIN" required>
+    <input type="date" name="birth_date" placeholder="Date de naissance" required>
+    <input type="text" name="registration_number" 
+       placeholder="Numéro d'inscription" 
+       required 
+       minlength="7" 
+       maxlength="7" 
+       pattern="[0-9]{7}" 
+       title="Le numéro d'inscription doit contenir exactement 7 chiffres">
+
+    <input type="email" name="email" placeholder="Adresse e-mail (@isgb.ucar.tn)" required>
+    <input type="password" name="password1" placeholder="Mot de passe" required>
+    <input type="password" name="password2" placeholder="Confirmer le mot de passe" required>
+    <button type="submit">Créer mon compte</button>
+</form>
+
+        <a href="{% url 'login_student' %}">J'ai déjà un compte</a>
+        <a href="{% url 'home' %}">Retour à l'accueil</a>
+    </div>
+    
+</body>
+</html>

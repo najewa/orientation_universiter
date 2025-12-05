@@ -1,0 +1,10 @@
+Django>=4.2
+Flask>=2.3
+gunicorn
+waitress
+psycopg2-binary
+pandas
+numpy
+openpyxl
+scikit-learn
+requests

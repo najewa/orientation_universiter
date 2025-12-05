@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>espace administration </title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+ <!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<!-- Bootstrap + Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+/* === BODY & BACKGROUND === */
+body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(145deg, #eaf4ff 0%, #fdfdff 100%);
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* === HEADER === */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background:  rgba(17, 82, 121, 0.795);;
+    color: white;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    border-radius: 0 0 20px 20px;
+}
+
+
+/* === PROFIL + TITRE HEADER === */
+/* === Photo de profil (logo / avatar) === */
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* rend la photo circulaire */
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.25);
+    background: white;
+    transition: all 0.3s ease;
+}
+
+
+
+/* Alignement harmonieux du header */
+header h2 {
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+
+
+
+
+
+
+
+/* Petits boutons modernes du header */
+header .header-buttons .btn {
+    font-weight: 500;
+    margin-left: 0.6rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s ease;
+}
+
+header .header-buttons .btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+/* === Modale de compte === */
+.account-modal {
+  border-radius: 18px;
+  border: 1px solid rgba(90, 116, 201, 0.86);
+  background: linear-gradient(145deg, #ffffff 0%, #f0f6ff 100%);
+  box-shadow: 0 8px 25px rgba(52, 109, 167, 0.75);
+  animation: slideIn 0.3s ease-out;
+}
+.account-modal .modal-header {
+  background: linear-gradient(135deg, rgba(17, 82, 121, 0.795));
+  color: white;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+.account-modal .form-control {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 123, 255, 0.2);
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+.account-modal .form-control:focus {
+  border-color: #3f4ed6ff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+.account-modal .btn-save {
+  background: linear-gradient(135deg, #5a8ec5ff, #4d17e0ff);
+  color: white;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.account-modal .btn-save:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #2729a0ff, #5c85ddab);
+}
+
+/* === Modale de déconnexion === */
+.logout-modal {
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(76, 130, 230, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+/* === Animations === */
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+/* === LAYOUT === */
+.main-layout {
+    display: flex;
+    min-height: calc(100vh - 80px);
+    background: rgba(255, 255, 255, 0.75);
+}
+
+/* === SIDEBAR === */
+.sidebar {
+    width: 250px;
+    background:  rgba(17, 82, 121, 0.795);
+    backdrop-filter: blur(10px);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-right: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: white;
+    background: linear-gradient(135deg, #9ed2dbff,rgba(0, 123, 255, 0.25));
+    border-radius: 14px;
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.4);
+    transition: transform 0.25s ease, background 0.3s ease;
+   
+    
+}
+.sidebar .menu-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #437d8bff, #c8d2d4ff);
+}
+
+/* === CONTENT AREA === */
+.content-area {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,250,255,0.9));
+    border-top: 2px solid rgba(0, 0, 0, 0.05);
+    border-left: 2px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px 0 0 0;
+    padding: 1rem;
+}
+
+/* === CONTENEUR UNIFIÉ POUR AJOUT / LISTE / AUTORISÉS === */
+.gestion-section {
+    background: rgba(250, 250, 250, 1);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 1.3rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 20px rgba(91, 188, 228, 0.25);
+    border: 3px solid rgba(91, 188, 228, 0.4);
+    transition: all 0.3s ease;
+}
+.gestion-section:hover {
+    box-shadow: 0 10px 30px rgba(9, 55, 182, 0.7);
+}
+
+/* === CARTES === */
+.card {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 16px;
+    border: 1px solid rgba(91, 188, 228, 0.3);
+    box-shadow: 0 4px 15px rgba(91, 188, 228, 0.2);
+    transition: all 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(91, 188, 228, 0.3);
+}
+
+/* === ENTÊTE DE CARTE === */
+.card-header {
+    background: linear-gradient(135deg, #678ccf, #86c5f7);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0;
+    padding: 0.75rem 1rem;
+    box-shadow: inset 0 -2px 0 rgba(255,255,255,0.2);
+}
+/* === TABLEAUX === */
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+ 
+}
+
+.table thead th {
+  background: linear-gradient(135deg, #678ccf, #86c5f7);
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  border: none;
+  position: sticky; /* ✅ Garde le header visible */
+  top: 0;
+  z-index: 2;
+}
+
+.table tbody td {
+  text-align: center;
+  border-top: 3px solid rgba(43, 120, 153, 0.69);
+  color: #030303;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(44, 189, 233, 0.8);
+  transition: background 0.3s ease;
+}
+
+.table th, .table td {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+}
+
+
+
+
+/* === ACTIONS === */
+.table-actions a {
+  text-decoration: none;
+}
+
+.table-actions i:hover {
+  opacity: 0.8;
+}
+
+
+
+
+
+
+
+table tbody tr:nth-child(even) {
+    background: #ffffffff;
+}
+table tbody tr:hover {
+  background: #e4f2ff !important;
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;        /* scroll horizontal si le tableau est trop large */
+    -webkit-overflow-scrolling: touch;  /* pour mobile */
+}
+
+.table-container table {
+    width: 100%;
+    min-width: 1200px;       /* ou plus selon le nombre de colonnes */
+    table-layout: auto;     /* pour que les colonnes respectent leur largeur */
+}
+
+
+
+
+
+
+/* === FORMULAIRES === */
+#addForm, .card-body form {
+    background: rgba(239, 243, 250, 0.85);
+    border: 2px dashed rgba(61, 180, 231, 0.58);
+    border-radius: 18px;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+input.form-control-sm {
+    background: rgba(255,255,255,0.95);
+    border: 1.5px solid rgba(13, 92, 156, 0.8);
+    border-radius: 8px;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+input.form-control-sm:focus {
+    border-color: #277ac7ff;
+    box-shadow: 0 0 6px rgba(91, 188, 228, 0.4);
+}
+
+
+
+
+/* === BOUTON RESTAURER === */
+.btn-restore, .btn[data-bs-target="#restoreModal"] {
+    background: linear-gradient(135deg,  #85adc2, #68b6f0);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(65, 90, 201, 0.76);
+    transition: all 0.3s ease;
+}
+.btn-restore:hover, .btn[data-bs-target="#restoreModal"]:hover {
+    background: linear-gradient(135deg, #4252dbaf, #5369e0ff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(26, 51, 196, 0.6);
+}
+
+/* === ACTIONS TABLEAU (MODIFIER / SUPPRIMER) === */
+.table-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: rgba(218, 236, 243, 1);
+    color: #2f82d4b2;
+    border: 1px solid transparent;
+}
+.table-actions a:hover {
+    background: linear-gradient(135deg, #69a0dfff, #f9fbfdff);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
+}
+
+/* Animation d’apparition douce */
+.gestion-section, .card {
+    animation: fadeIn 0.6s ease forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === FOOTER === */
+footer {
+    text-align:center;
+    margin-top:2rem;
+    padding:1rem 0;
+    color:#004aad;
+    font-weight:500;
+}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+    .main-layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; overflow-x:auto; }
+    .sidebar .menu-btn { flex:1; justify-content:center; }
+}
+
+
+.modal-dialog-centered {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh;
+}
+
+
+
+.btn-sm i {
+  margin-right: 5px;
+}
+
+
+.hidden-col {
+    display: none;
+}
+
+.hidden-row { display: none !important; }
+.pagination-cols {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+
+
+
+.hidden-col {
+    display: none;
+}
+
+
+
+
+/* === modale modifier === */
+.modal-content {
+    border-radius: 16px;
+    border: none;
+}
+
+.modal-header {
+    background: #3b82f6; /* bleu professionnel */
+    color: white;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-body {
+    background: #f8fafc;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #0d6efd;
+}
+
+.btn-custom {
+    background: #2563eb;
+    color: white;
+    border-radius: 12px;
+    padding: 8px 20px;
+    font-weight: 600;
+}
+
+.btn-custom:hover {
+    background: #1d4ed8;
+}
+
+</style>
+</head>
+<body>
+<!-- Header -->
+
+    
+{% load static %}
+<header>
+  <div class="d-flex align-items-center gap-3">
+    <img src="{% static 'img/isg_logo.png' %}" alt="Logo ISG" class="profile-pic">
+
+    <h2><i class="bi bi-people-fill"></i> Université _Admin</h2>
+  </div>
+
+
+
+
+<div class="header-buttons">
+  <!-- Bouton Gérer le compte -->
+  <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#accountModal">
+    <i class="bi bi-person-circle me-1"></i> Gérer compte
+  </button>
+
+  <!-- Bouton Déconnecter -->
+ <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">
+  <i class="bi bi-box-arrow-right me-1"></i> Déconnecter
+</button>
+</div>
+</header>
+
+
+<!-- === Modal Gérer le compte amélioré === -->
+<div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content account-modal">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="accountModalLabel"><i class="bi bi-person-lines-fill"></i> Mon Compte</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Boutons de navigation interne -->
+        <div class="d-flex justify-content-around mb-3">
+          <button type="button" class="btn btn-outline-primary btn-sm" onclick="showSection('usernameSection')">
+            Changer Nom d'utilisateur
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm" onclick="showSection('passwordSection')">
+            Changer Mot de passe
+          </button>
+          
+        </div>
+
+        <!-- Section Nom d'utilisateur -->
+        <form id="usernameSection" class="param-section" style="display:none;">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Nouveau Nom d’utilisateur</label>
+            <input type="text" class="form-control form-control-sm" name="new_username" placeholder="Nouvel utilisateur" required>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-save"><i class="bi bi-pencil-square"></i> Modifier Nom</button>
+          </div>
+        </form>
+
+        <!-- Section Mot de passe -->
+        <form id="passwordSection" class="param-section" style="display:none;">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control form-control-sm" name="email" placeholder="Votre email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Ancien mot de passe</label>
+            <input type="password" class="form-control form-control-sm" name="old_password" placeholder="••••••••" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nouveau mot de passe</label>
+            <input type="password" class="form-control form-control-sm" name="new_password" placeholder="••••••••" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Confirmer le nouveau mot de passe</label>
+            <input type="password" class="form-control form-control-sm" name="confirm_password" placeholder="••••••••" required>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-save"><i class="bi bi-key-fill"></i> Changer Mot de passe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- === Modal Déconnexion === -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content logout-modal">
+      <div class="modal-body text-center p-4">
+        <i class="bi bi-box-arrow-right text-danger" style="font-size:2rem;"></i>
+        <h5 class="mt-3">Voulez-vous vraiment vous déconnecter ?</h5>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">NON</button>
+          <!-- Bouton Oui redirige vers la vue login_admin -->
+          <a href="{% url 'login_admin' %}" class="btn btn-danger px-4">
+            <i class="bi bi-check2-circle"></i> Oui
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="main-layout">
+
+<div class="sidebar">
+  <button class="menu-btn" onclick="toggleSection('dashboardSection')">
+    <i class="bi bi-house"></i> Accueil
+  </button>
+  <button class="menu-btn" onclick="toggleSection('gestionEtudiants')">
+    <i class="bi bi-database"></i> Base officielle
+  </button>
+  <button class="menu-btn" onclick="toggleSection('authorizedSection')">
+    <i class="bi bi-check2-circle"></i> Étudiants autorisés
+</button>
+
+<button class="menu-btn choice-btn" onclick="toggleSection('choiceetudient')">
+    <i class="bi bi-person-lines-fill"></i> Choix Étudiant
+</button>
+
+<button class="menu-btn choice-btn" onclick="toggleSection('annonce ')">
+    <i class="bi bi-person-lines-fill"></i> Annonce
+</button>
+</div>
+    
+
+    <!-- Content Area -->
+
+<div>
+   <!-- Messages Django --> 
+    {% if messages %} 
+    <div class="alert-container mb-3"> 
+      {% for message in messages %} 
+      <div class="alert alert-{{ message.tags }}"> 
+        <span class="icon"> 
+          {% if 'error' in message.tags %}❗{% elif 'success' in message.tags %}✅{% elif 'warning' in message.tags %}⚠️{% else %}ℹ️{% endif %} </span> 
+          {{ message }} 
+      </div>
+     {% endfor %} 
+    </div> 
+    {% endif %}
+
+  
+
+        <!-- Dashboard Accueil -->
+        <div id="dashboardSection" class="gestion-section" style="display:none;">
+            <div class="row g-3">
+                <div class="col-md-4">
+                <iframe title="projet n" width="1310" height="700.5" src="https://app.powerbi.com/view?r=eyJrIjoiOTE2YzdhNTMtZDdlYy00NTBkLThkYjAtMzRhNTJkNmQ2MGQyIiwidCI6ImRiZDY2NjRkLTRlYjktNDZlYi05OWQ4LTVjNDNiYTE1M2M2MSIsImMiOjl9" frameborder="0" allowFullScreen="true"></iframe>    
+            </div>
+        </div>
+
+      </div>
+<div class="table-container">
+
+<!-- Gestion Étudiants -->
+<div id="gestionEtudiants" class="gestion-section" style="display:none;">  
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header"><i class="bi bi-upload"></i> Importer / Ajouter Étudiants</div>
+        <div class="card-body">
+
+            <form class="mb-2 d-flex gap-2 flex-wrap" method="POST" enctype="multipart/form-data" action="{% url 'import_students' %}">
+                {% csrf_token %}
+                <input type="file" name="file" accept=".xlsx" required class="form-control form-control-sm w-auto">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-file-earmark-excel"></i> Importer
+                </button>
+            </form>
+
+            <button type="button" class="btn btn-custom btn-sm" onclick="toggleAddForm()">
+                <i class="bi bi-plus-circle">Ajouter Etudiant</i> 
+            </button>
+
+            <!-- Formulaire -->
+              <form id="addForm" class="mt-3 d-none" method="POST" action="{% url 'student_spending' %}">
+                  {% csrf_token %}
+                  
+                  <input type="hidden" name="action" value="add_student">
+                  <h6 class="text-primary fw-bold">Informations personelles</h6>
+                  <div class="row g-2">
+                      <div class="col-md-4"><input type="text" name="registration_number" placeholder="Numéro d'inscription" required class="form-control form-control-sm"></div>
+                      <div class="col-md-4"><input type="text" name="first_name" placeholder="Prénom" required class="form-control form-control-sm"></div>
+                      <div class="col-md-4"><input type="text" name="last_name" placeholder="Nom" required class="form-control form-control-sm"></div>
+                      <div class="col-md-4"><input type="text" name="identite" placeholder="Identité (CIN)" required class="form-control form-control-sm"></div>
+                      <div class="col-md-4"><input type="date" name="birth_date" required class="form-control form-control-sm"></div>
+                      <div class="col-md-6"><input type="email" name="email_institutionnel" placeholder="Email institutionnel" required class="form-control form-control-sm"></div>
+
+                      <!-- 🔹 Informations académiques -->
+                    
+                      <h6 class="text-primary fw-bold">Informations académiques</h6>
+                       <div class="row g-2">
+                <div class="col-md-4"><input type="number" name="Credit_totale____2emme" placeholder="Crédit total 2ème" required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="Moyenne_generale__2emme"  placeholder="Moyenne générale 2ème" required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="diagnostic__financier" placeholder="diagnostic_financier"  required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="gestion_de_production"   placeholder="Gestion de production" required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="fondamentaux_du_managment"   placeholder="Fondamentaux du management" required class="form-control form-control-sm"></div>                
+                <div class="col-md-4"><input type="number" step="0.01" name="fondamenteaux_du_marketing"    placeholder="Fondamentaux du marketing:"  required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="Mathematiques_financieres"   placeholder="Mathématiques financières"  required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="Principe_de_gestion_1"   placeholder="Principe de gestion I"  required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="principe_de_gestion_2"   placeholder="principe de gestion II"  required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="moyenne_elements_specifiques"   placeholder="Moyenne des éléments spécifiques" required class="form-control form-control-sm"></div>
+                <div class="col-md-4"><input type="number" step="0.01" name="scrore"   placeholder="score"  required class="form-control form-control-sm"></div>
+                <i><button   class="btn btn-custom btn-sm" type="submit">Ajouter</button></i>
+
+                
+                </div>
+            </form>
+        
+        </div>
+    </div>
+
+    <!-- Table des étudiants (✔️ placée au bon endroit) -->
+<div class="card shadow-sm">
+    <div class="card-header">
+        <i class="bi bi-person-check"></i> Liste des Étudiants
+    </div>
+
+   
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+
+    <!-- Recherche étudiant -->
+    <div class="input-group input-group-sm flex-grow-1" style="max-width: 250px;">
+        <span class="input-group-text bg-dark text-white"><i class="bi bi-search"></i></span>
+        <input type="text" id="searchInput" class="form-control border-dark shadow-sm" placeholder="Rechercher étudiant...">
+    </div>
+
+    <!-- Filtrer par spécialité -->
+    <select id="filterSpecialite" class="form-select form-select-sm flex-grow-1 border-dark shadow-sm" style="max-width: 180px;">
+        <option value="">Spécialité choisie</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Finance">Finance</option>
+        <option value="Management">Management</option>
+        <option value="Logistique">Logistique</option>
+    </select>
+
+    <!-- Filtrer par décision -->
+    <select id="filterDecision" class="form-select form-select-sm flex-grow-1 border-dark shadow-sm" style="max-width: 150px;">
+        <option value="">Décision</option>
+        <option value="Accepté">Accepté</option>
+        <option value="Refusé">Refusé</option>
+        <option value="En attente">En attente</option>
+    </select>
+
+    <!-- Bouton Réinitialiser -->
+    <button id="resetFilters" class="btn btn-dark btn-sm shadow-sm">
+        <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+    </button>
+
+
+
+
+    <!-- Boutons pagination colonnes -->
+    <div class="d-flex gap-2">
+        <button id="prevCols" class="btn btn-secondary btn-sm"><< </button>
+        <button id="nextCols" class="btn btn-primary btn-sm">>></button>
+    </div>
+    
+</div>
+
+<div class="card-body table-responsive">
+    <table class="table table-hover align-middle shadow-sm rounded">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Numéro</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>CIN</th>
+                <th>Naissance</th>
+                <th>Email</th>
+                <th>Crédit 2ème</th>
+                <th>Moyenne 2ème</th>
+                <th>Diagnostic</th>
+                <th>Gestion</th>
+                <th>Fund. Management</th>
+                <th>Fund. Marketing</th>
+                <th>Math. Financières</th>
+                <th>Principe 1</th>
+                <th>Principe 2</th>
+                <th>Moy. Eléments</th>
+                <th>Score</th>
+                <th>Spécialité choisie</th>
+                <th>Prediction</th>
+                <th>Action Décision</th>
+                <th>Décision Admin</th>
+                <th>Décision finale</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.registration_number }}</td>
+                <td>{{ student.last_name }}</td>
+                <td>{{ student.first_name }}</td>
+                <td>{{ student.identite }}</td>
+                <td>{{ student.birth_date }}</td>
+                <td>{{ student.email_institutionnel }}</td>
+                <td>{{ student.credit_2emme }}</td>
+                <td>{{ student.moyenne_generale_2emme }}</td>
+                <td>{{ student.diagnostic_financier }}</td>
+                <td>{{ student.gestion_production }}</td>
+                <td>{{ student.fondamentaux_management }}</td>
+                <td>{{ student.fondamentaux_marketing }}</td>
+                <td>{{ student.mathematiques_financieres }}</td>
+                <td>{{ student.principe_gestion1 }}</td>
+                <td>{{ student.principe_gestion2 }}</td>
+                <td>{{ student.moyenne_elements_specifiques }}</td>
+                <td>{{ student.score }}</td>
+
+                <!-- Spécialité choisie - plus visible -->
+                <td class="text-center">
+                    {% if student.specialite_choisit %}
+                        <span class="badge" style="background-color:#a8dadc; color:#1d3557; font-weight:bold; font-size:1rem;">
+                            {{ student.specialite_choisit }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-light text-dark fw-bold" style="font-size:0.95rem;">Non choisi</span>
+                    {% endif %}
+                </td>
+
+                <!-- Prediction -->
+                <td class="text-center">
+                    {% if student.prediction %}
+                        <span class="badge" style="color:#1d3557; font-weight:bold; font-size:1rem;" title="Basé sur analyse automatique">
+                            {{ student.prediction }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-light text-dark fw-bold" style="font-size:0.95rem;">En attente</span>
+                    {% endif %}
+                </td>
+
+                <!-- Formulaire décision admin - plus compact -->
+                <td class="text-center">
+                    {% if student.specialite_choisit %}
+                        <form method="POST" action="{% url 'decide_specialite' student.id %}" class="p-2 border rounded bg-light shadow-sm" style="width: 180px; margin:auto;">
+                            {% csrf_token %}
+                            <select name="decision" id="decisionSelect{{ student.id }}" class="form-select form-select-sm mb-1">
+                                <option value="accepted">Accepter</option>
+                                <option value="refused">Refuser</option>
+                            </select>
+
+                            <!-- Liste déroulante si refus -->
+                            <div id="specialiteField{{ student.id }}" style="display:none;">
+                                <select name="specialite_finale" class="form-select form-select-sm mb-1">
+                                    <option value="">-- Choisir spécialité --</option>
+                                    <option value="Management">Management</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Logistique">Logistique</option>
+                                  
+                                </select>
+                            </div>
+
+                            <button class="btn btn-sm btn-primary w-100">Valider</button>
+                        </form>
+
+                        <script>
+                            document.getElementById("decisionSelect{{ student.id }}").addEventListener("change", function() {
+                                const field = document.getElementById("specialiteField{{ student.id }}");
+                                field.style.display = this.value === "refused" ? "block" : "none";
+                            });
+                        </script>
+                    {% else %}
+                        <span class="badge" style= "color:#6a040f; font-weight:bold; font-size:0.9rem;">
+                            ❗ Choix non encore fait
+                        </span>
+                    {% endif %}
+                </td>
+
+                <!-- Décision admin -->
+                <td class="text-center">
+                    {% if student.decision_admin == "accepted" %}
+                        <span class="badge" style=" color:#90be6d; font-weight:bold; font-size:1rem;">
+                            Accepté
+                        </span>
+                    {% elif student.decision_admin == "refused" %}
+                        <span class="badge" style= "color : #f28482; font-weight:bold; font-size:1rem;">
+                            Refusé
+                        </span>
+                    {% else %}
+                        <span class="badge bg-light text-dark fw-bold" style="font-size:0.95rem;">En attente</span>
+                    {% endif %}
+                </td>
+
+                <!-- Décision finale -->
+                <td class="text-center">
+                    {% if student.specialite_finale %}
+                        <span class="badge" style="background-color:#4dabf7; color:#1d3557; font-weight:bold; font-size:1rem;">
+                            {{ student.specialite_finale }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-light text-dark fw-bold" style="font-size:0.95rem;">--</span>
+                    {% endif %}
+                </td>
+
+                <!-- Actions -->
+            <td class="text-center">
+                      <a href="#" class="edit-btn"
+                      data-id="{{ student.id }}"
+                      data-registration="{{ student.registration_number }}"
+                      data-email="{{ student.email_institutionnel }}"
+                      data-last="{{ student.last_name }}"
+                      data-first="{{ student.first_name }}"
+                      data-identite="{{ student.identite }}"
+                      data-birth="{{ student.birth_date }}"
+
+                      data-credit2="{{ student.credit_2emme }}"
+                      data-mg2="{{ student.moyenne_generale_2emme }}"
+                      data-df="{{ student.diagnostic_financier }}"
+                      data-gp="{{ student.gestion_production }}"
+                      data-fmgt="{{ student.fondamentaux_management }}"
+                      data-fmkt="{{ student.fondamentaux_marketing }}"
+                      data-math="{{ student.mathematiques_financieres }}"
+                      data-pg1="{{ student.principe_gestion1 }}"
+                      data-pg2="{{ student.principe_gestion2 }}"
+                      data-mes="{{ student.moyenne_elements_specifiques }}"
+                      data-score="{{ student.score }}"
+                    >
+                        <i class="bi bi-pencil-square text-primary fs-5"></i>
+                    </a>
+
+
+
+
+                    <a href="#" class="delete-official-btn ms-2" data-id="{{ student.id }}"><i class="bi bi-trash text-danger fs-5"></i></a>
+          </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+</div></div>
+
+
+
+
+  
+<!-- Étudiants autorisés -->
+<div id="authorizedSection" class="gestion-section" style="display:none;">
+    <div class="d-flex justify-content-end mb-2">
+        <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#restoreModal">
+            <i class="bi bi-arrow-clockwise"></i> Restaurer
+        </button>
+
+    </div>
+
+    <div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+        <div><i class="bi bi-person-check"></i> Étudiants autorisés</div>
+        <div class="d-flex gap-2">
+            <input type="text" id="filterEmail" placeholder="Filtrer par email"
+                   class="form-control form-control-sm" style="width:200px;">
+            <input type="text" id="filterNum" placeholder="Filtrer par numéro"
+                   class="form-control form-control-sm" style="width:180px;">
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table id="authorizedTable" class="table table-hover align-middle mb-0">
+                <thead class="table-light text-uppercase">
+                    <tr>
+                        <th>Numéro d'inscription</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in authorized_students %}
+                    <tr>
+                        <td>{{ student.registration_number }}</td>
+                        <td>{{ student.last_name }}</td>
+                        <td>{{ student.first_name }}</td>
+                        <td>{{ student.email_institutionnel }}</td>
+                        <td class="text-center">
+                            <a href="#" class="btn btn-sm btn-outline-danger rounded-circle p-1"
+                               data-id="{{ student.id }}" data-type="authorized" title="Supprimer">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">
+                            Aucun étudiant autorisé
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    
+</div>
+
+<!-- 🔹 MODAL – Modifier Étudiant -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">   <!-- ⬅ modal élargi -->
+    <div class="modal-content shadow-lg border-0 rounded-4">
+
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i> Modifier un Étudiant</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light">
+        <form method="POST" id="editForm">
+          {% csrf_token %}
+          <input type="hidden" name="student_id" id="modal_student_id">
+
+          <!-- 🔹 Infos générales -->
+          <h6 class="fw-bold text-primary mb-2">Informations personnelles</h6>
+          <div class="row g-3 mb-3">
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Numéro d'inscription</label>
+              <input type="text" id="modal_registration_number" name="registration_number" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Nom</label>
+              <input type="text" id="modal_last_name" name="last_name" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Prénom</label>
+              <input type="text" id="modal_first_name" name="first_name" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Email institutionnel</label>
+              <input type="email" id="modal_email" name="email_institutionnel" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">CIN</label>
+              <input type="text" id="modal_identite" name="identite" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Date naissance</label>
+              <input type="text" id="modal_naissance" name="birth_date" class="form-control">
+            </div>
+          </div>
+
+          <!-- 🔹 Notes et valeurs académiques -->
+          <h6 class="fw-bold text-primary mb-2">Données académiques</h6>
+          <div class="row g-3">
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Crédit 2ème</label>
+              <input type="text" id="modal_credit2" name="Credit_totale____2emme" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Moyenne 2ème</label>
+              <input type="text" id="modal_mg2" name="Moyenne_generale__2emme" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Diagnostic Financier</label>
+              <input type="text" id="modal_df" name="diagnostic__financier" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Gestion Production</label>
+              <input type="text" id="modal_gp" name="gestion_de_production" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">F. Management</label>
+              <input type="text" id="modal_fmgt" name="fondamentaux_du_managment" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">F. Marketing</label>
+              <input type="text" id="modal_fmkt" name="fondamenteaux_du_marketing" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Math Financières</label>
+              <input type="text" id="modal_math" name="Mathematiques_financieres" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Principe Gestion 1</label>
+              <input type="text" id="modal_pg1" name="Principe_de_gestion_1" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Principe Gestion 2</label>
+              <input type="text" id="modal_pg2" name="principe_de_gestion_2" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Moyenne spécifiques</label>
+              <input type="text" id="modal_mes" name="moyenne_elements_specifiques" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Score</label>
+              <input type="text" id="modal_score" name="scrore" class="form-control">
+            </div>
+
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-success px-4 fw-semibold">
+              <i class="bi bi-save me-1"></i> Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer bg-white rounded-bottom-4">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i> Annuler
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 MODAL – Supprimer Étudiant -->
+
+
+<!-- 🔹 MODAL – Supprimer Étudiant -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+
+      <!-- Header -->
+      <div class="modal-header bg-danger text-white rounded-top-4">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="bi bi-exclamation-triangle me-2"></i> Confirmer la suppression
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light text-center">
+        <p class="fs-6 mb-4">
+          Êtes-vous sûr de vouloir <strong>supprimer cet étudiant</strong> ?<br>
+          Cette action est irréversible.
+        </p>
+        <form method="POST" id="deleteForm">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-custom btn-danger px-4 me-2">
+            <i class="bi bi-trash me-1"></i> Supprimer
+          </button>
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i> Annuler
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 MODAL – Restaurer Étudiants Supprimés -->
+<div class="modal fade" id="restoreModal" tabindex="-1" aria-labelledby="restoreModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white rounded-top-4">
+        <h5 class="modal-title" id="restoreModalLabel">
+          <i class="bi bi-arrow-clockwise me-2"></i> Étudiants supprimés
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light">
+        <form method="POST" action="{% url 'restore_authorized_student' %}">
+          {% csrf_token %}
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle shadow-sm">
+              <thead class="table-primary">
+                <tr>
+                  <th style="width:5%;">✔</th>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Email</th>
+                  <th>Matricule</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in deleted_students %}
+                <tr>
+                  <td><input type="checkbox" name="student_ids" value="{{ student.id }}"></td>
+                  <td>{{ student.last_name }}</td>
+                  <td>{{ student.first_name }}</td>
+                  <td>{{ student.email_institutionnel }}</td>
+                  <td>{{ student.registration_number }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-3">
+                    <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                    Aucun étudiant supprimé
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-custom btn-success px-4">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Restaurer
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-white rounded-bottom-4">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i> Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+    <div class="modal-content shadow-lg border-0 rounded-4">
+<!-- 🌟 SECTION : Liste des formulaires étudiants  boton chox etudient -->
+<div id="choiceetudient" class="gestion-section" style="display:none;">
+  <div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-person-lines-fill"></i> 📋 Liste des formulaires envoyés</span>
+
+      <!-- 🧾 Boutons d'export -->
+      <div>
+        <button class="btn btn-success btn-sm me-2" onclick="exportTableToExcel('formulairesTable', 'Liste_Formulaires')">
+          <i class="bi bi-file-earmark-excel"></i> Exporter Excel
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="exportTableToPDF()">
+          <i class="bi bi-file-earmark-pdf"></i> Exporter PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="formulairesTable" class="table table-hover align-middle table-striped">
+          <thead class="table-primary">
+            <tr>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>CIN</th>
+              <th>Date Naissance</th>
+              <th>Num. Inscription</th>
+              <th>Email</th>
+              <th>Ordre de préférence</th>
+              <th>Date d’envoi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in submissions %}
+            <tr>
+              <td>{{ s.last_name }}</td>
+              <td>{{ s.first_name }}</td>
+              <td>{{ s.identite }}</td>
+              <td>{{ s.birth_date }}</td>
+              <td>{{ s.inscription }}</td>
+              <td>{{ s.email }}</td>
+              <td>{{ s.order_preference }}</td>
+              <td>{{ s.date_submitted|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="text-center text-muted">Aucune soumission trouvée.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+
+function toggleSection(sectionId) {
+
+    // Masquer toutes les sections
+    document.querySelectorAll('.gestion-section').forEach(section => {
+        section.style.display = "none";
+    });
+
+    // Afficher la section cliquée
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
+
+// Modales édition / 
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            // Injecter les données
+            document.getElementById("modal_student_id").value = btn.dataset.id;
+            document.getElementById("modal_registration_number").value = btn.dataset.registration;
+            document.getElementById("modal_email").value = btn.dataset.email;
+            document.getElementById("modal_last_name").value = btn.dataset.last;
+            document.getElementById("modal_first_name").value = btn.dataset.first;
+            document.getElementById("modal_identite").value = btn.dataset.identite;
+            document.getElementById("modal_naissance").value = btn.dataset.birth;
+
+            document.getElementById("modal_credit2").value = btn.dataset.credit2;
+            document.getElementById("modal_mg2").value = btn.dataset.mg2;
+            document.getElementById("modal_df").value = btn.dataset.df;
+            document.getElementById("modal_gp").value = btn.dataset.gp;
+            document.getElementById("modal_fmgt").value = btn.dataset.fmgt;
+            document.getElementById("modal_fmkt").value = btn.dataset.fmkt;
+            document.getElementById("modal_math").value = btn.dataset.math;
+            document.getElementById("modal_pg1").value = btn.dataset.pg1;
+            document.getElementById("modal_pg2").value = btn.dataset.pg2;
+            document.getElementById("modal_mes").value = btn.dataset.mes;
+            document.getElementById("modal_score").value = btn.dataset.score;
+
+            // Définir action du formulaire
+            document.getElementById("editForm").action = `/accounts/student/${btn.dataset.id}/edit/`;
+
+            // Afficher modal
+            new bootstrap.Modal(document.getElementById("editModal")).show();
+        });
+    });
+
+});
+
+  // supprimer modale 
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Récupère tous les boutons de suppression
+  const deleteButtons = document.querySelectorAll('.delete-btn, .delete-official-btn');
+  const deleteForm = document.getElementById('deleteForm');
+  const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+  // Pour chaque bouton
+  deleteButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Définir l'action du formulaire selon le type d'étudiant
+      if (btn.dataset.type === "authorized") {
+        deleteForm.action = `/accounts/authorized/delete/${btn.dataset.id}/`;
+      } else {
+        deleteForm.action = `/accounts/student/${btn.dataset.id}/delete/`;
+      }
+
+      // Ouvrir la modale
+      deleteModal.show();
+    });
+  });
+});
+
+
+
+
+
+function toggleAddForm() {
+    document.getElementById("addForm").classList.toggle("d-none");
+}
+
+
+
+
+// pagintion table 
+    
+document.addEventListener("DOMContentLoaded", function () {
+    const colsPerPage = 7; // nombre de colonnes visibles entre la première et la dernière
+    let currentPage = 0;
+
+    const table = document.querySelector("table");
+    const rows = table.querySelectorAll("tr");
+
+    const totalCols = rows[0].children.length;
+    const scrollableCols = totalCols - 2; // toutes les colonnes sauf 1ère et dernière
+    const totalPages = Math.ceil(scrollableCols / colsPerPage);
+
+    function showColumns() {
+        rows.forEach(row => {
+            const cells = row.children;
+            for (let i = 1; i < totalCols - 1; i++) { // index 1 à totalCols-2
+                if (i >= currentPage * colsPerPage + 1 && i < (currentPage + 1) * colsPerPage + 1) {
+                    cells[i].classList.remove("hidden-col");
+                } else {
+                    cells[i].classList.add("hidden-col");
+                }
+            }
+            // Toujours afficher 1ère et dernière colonne
+            cells[0].classList.remove("hidden-col");
+            cells[totalCols - 1].classList.remove("hidden-col");
+        });
+    }
+
+    document.getElementById("nextCols").onclick = function () {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            showColumns();
+        }
+    };
+
+    document.getElementById("prevCols").onclick = function () {
+        if (currentPage > 0) {
+            currentPage--;
+            showColumns();
+        }
+    };
+
+    showColumns(); // afficher la première page dès le chargement
+});
+
+
+
+
+// filtrage table etudient 
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("searchInput");
+    const filterSpecialite = document.getElementById("filterSpecialite");
+    const filterDecision = document.getElementById("filterDecision");
+    const resetBtn = document.getElementById("resetFilters");
+
+    const tableBody = document.querySelector("table tbody");
+    const rows = tableBody.querySelectorAll("tr");
+
+    function filterTable() {
+        const search = searchInput.value.toLowerCase();
+        const specialite = filterSpecialite.value.toLowerCase();
+        const decision = filterDecision.value.toLowerCase();
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            const rowSpecialite = row.querySelector("td:nth-child(18)")?.innerText.toLowerCase() || "";
+            const rowDecision = row.querySelector("td:nth-last-child(3)")?.innerText.toLowerCase() || "";
+
+            let visible = true;
+
+            if (search && !text.includes(search)) visible = false;
+            if (specialite && !rowSpecialite.includes(specialite)) visible = false;
+            if (decision && !rowDecision.includes(decision)) visible = false;
+
+            row.classList.toggle("hidden-row", !visible);
+        });
+    }
+
+    searchInput.addEventListener("keyup", filterTable);
+    filterSpecialite.addEventListener("change", filterTable);
+    filterDecision.addEventListener("change", filterTable);
+
+    resetBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        filterSpecialite.value = "";
+        filterDecision.value = "";
+        filterTable();
+    });
+});
+
+// decisison specialite 
+    
+
+// filtrage recherche table autoriser 
+
+
+$(document).ready(function() {
+    var table = $('#authorizedTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthChange: false,
+        searching: true,
+        columnDefs: [{ targets: [4], orderable: false }],
+        language: {
+            search: "🔍 Rechercher :",
+            zeroRecords: "Aucun étudiant trouvé",
+            info: "Affichage _START_ à _END_ sur _TOTAL_ étudiants",
+            infoEmpty: "Aucun étudiant disponible",
+            infoFiltered: "(filtré à partir de _MAX_ étudiants)",
+            paginate: { first: "⏮", last: "⏭", next: "▶", previous: "◀" }
+        },
+        dom: '<"d-flex justify-content-between mb-2"fB>rtip', // Déplace la recherche en haut
+    });
+
+    // Filtrage par Email
+    $('#filterEmail').on('keyup', function() {
+        table.column(3).search(this.value).draw();
+    });
+
+    // Filtrage par Numéro d'inscription
+    $('#filterNum').on('keyup', function() {
+        table.column(0).search(this.value).draw();
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

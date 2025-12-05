@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Orientation - ISG Bizerte</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 50px 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .slogan {
+            font-style: italic;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 35px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: #2575fc;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background: #6ebdfd;
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            color: #fff;
+            margin-top: 40px;
+            font-size: 12px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: rise linear infinite;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-110vh) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Institut Supérieur de Gestion de Bizerte</h1>
+        <p class="slogan">« Former les gestionnaires de demain avec excellence »</p>
+
+        <a href="{% url 'login_student' %}" class="button">Accéder à l'espace Étudiant</a>
+        <a href="{% url 'login_admin' %}" class="button">Accéder à l'espace Administrateur</a>
+    </div>
+
+    <footer>
+        © 2025 Institut Supérieur de Gestion de Bizerte | Tous droits réservés
+    </footer>
+
+    <script>
+        const colors = ['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0.7)'];
+        const numBubbles = 50;
+
+        for (let i = 0; i < numBubbles; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            const size = Math.random() * 30 + 10; // taille entre 10px et 40px
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            bubble.style.animationDuration = `${Math.random() * 15 + 5}s`; // durée 5 à 20s
+            bubble.style.animationDelay = `${Math.random() * 10}s`;
+            document.body.appendChild(bubble);
+        }
+    </script>
+    <footer>© 2025 Gestion Étudiants - Université XYZ</footer>
+</body>
+</html>
